@@ -1,43 +1,57 @@
 pipeline {
     agent any
-    description 'CI/CD pipeline for Country Service microservice'
     tools {
-        maven 'mymaven'
+        maven 'Maven3' // Utiliser le nom exact configuré dans Jenkins
     }
     environment {
-        MAVEN_OPTS = '-Xmx1024m'
         SONAR_PROJECT_KEY = 'country-service'
+        // Remplacer par tes variables si nécessaire
+        SONARQUBE_CREDENTIALS = 'sonarqubePWD'
+        SONARQUBE_SERVER = 'MySonarQubeServer'
     }
     stages {
         stage('Checkout code') {
             steps {
-                // Pull code from GitHub
-                git branch: 'main', url: 'https://github.com/hattay112amine/spring-boot-country-service-microservice.git'
+                echo "Checkout du code depuis GitHub"
+                git branch: 'master', url: 'https://github.com/hattay112amine/spring-boot-country-service-microservice.git'
             }
         }
-        stage('Compile, test code, package in war file and store it in maven repo') {
+
+        stage('Build & Test') {
             steps {
+                echo "Compilation et tests avec Maven"
                 sh 'mvn clean install'
             }
             post {
                 success {
-                    // Publish JUnit test reports
+                    echo "Publication des rapports JUnit"
                     junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
                 }
             }
         }
+
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(installationName: 'MySonarQubeServer', credentialsId: 'sonarqubePWD') {
-                    // Run SonarQube analysis
+                echo "Analyse SonarQube du projet"
+                withSonarQubeEnv(installationName: "${SONARQUBE_SERVER}", credentialsId: "${SONARQUBE_CREDENTIALS}") {
                     sh "mvn sonar:sonar -Dsonar.projectKey=${SONAR_PROJECT_KEY}"
                 }
             }
         }
+
+        stage('Quality Gate') {
+            steps {
+                echo "Vérification du Quality Gate SonarQube"
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
     }
+
     post {
         always {
-            echo "Pipeline finished at ${new Date()}"
+            echo "Pipeline terminé à ${new Date()}"
         }
     }
 }
