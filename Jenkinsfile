@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout code') {
             steps {
                 // Pull code from GitHub
-                git branch: 'master', url: 'https://github.com/hattay112amine/spring-boot-country-service-microservice.git'
+                git branch: 'main', url: 'https://github.com/hattay112amine/spring-boot-country-service-microservice.git'
             }
         }
         stage('Compile, test code, package in war file and store it in maven repo') {
