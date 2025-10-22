@@ -142,4 +142,7 @@
             <id>nexus-snapshots</id>
             <name>Nexus Snapshots</name>
             <url>http://172.27.132.151:8081/repository/maven-snapshots/</url>
-        </snapshotReposit
+        </snapshotRepository>
+    </distributionManagement>
+
+</project>
