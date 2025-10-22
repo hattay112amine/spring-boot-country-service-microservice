@@ -5,7 +5,8 @@ pipeline {
         JAVA_HOME = "/usr/lib/jvm/java-17-openjdk-amd64"
         PATH = "${JAVA_HOME}/bin:${env.PATH}"
         NEXUS_URL = "http://172.27.132.151:8081/repository/maven-releases/"
-        TOMCAT_WEBAPPS = "/opt/tomcat/latest/webapps/"
+        TOMCAT_HOME = "/opt/tomcat/latest"
+        TOMCAT_WEBAPPS = "${TOMCAT_HOME}/webapps/"
     }
 
     stages {
@@ -39,7 +40,12 @@ pipeline {
 
         stage('Deploy to Tomcat') {
             steps {
+                echo "Copie du WAR dans Tomcat"
                 sh "cp target/*.war ${TOMCAT_WEBAPPS}"
+                
+                echo "Redémarrage de Tomcat"
+                sh "${TOMCAT_HOME}/bin/shutdown.sh || true"
+                sh "${TOMCAT_HOME}/bin/startup.sh"
             }
         }
     }
