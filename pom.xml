@@ -21,7 +21,7 @@
     <properties>
         <sonar.projectKey>gestion_bib</sonar.projectKey>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <sonar.login>squ_3ae70890d4288ea593bac4d6d9760a6fc8c1f058</sonar.login>
+        <sonar.login>squ_958e6a3289674a34bfc909e0a6117707040e90fa</sonar.login>
         <java.version>17</java.version>
         <maven.war.plugin.version>3.3.2</maven.war.plugin.version>
     </properties>
