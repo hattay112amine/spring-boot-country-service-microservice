@@ -18,6 +18,9 @@
     <name>demo</name>
     <description>Demo project for Spring Boot</description>
 
+    <!-- AJOUT : packaging WAR pour Tomcat -->
+    <packaging>war</packaging>
+
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -105,6 +108,17 @@
                 <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>3.11.1.3008</version>
+            </plugin>
+
+            <!-- AJOUT : Maven Compiler Plugin pour s'assurer que Java 17 est utilisé -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
