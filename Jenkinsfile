@@ -18,12 +18,14 @@ pipeline {
 
         stage('Build & Test') {
             steps {
+                echo "Build et tests Maven"
                 sh 'mvn clean install'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
+                echo "Analyse SonarQube"
                 withSonarQubeEnv('MySonarQubeServer') {
                     sh 'mvn sonar:sonar'
                 }
@@ -32,8 +34,9 @@ pipeline {
 
         stage('Deploy to Nexus') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'admin', passwordVariable: 'admin')]) {
-                    sh "mvn deploy -Dnexus.username=${admin} -Dnexus.password=${admin}"
+                echo "Déploiement sur Nexus"
+                withCredentials([usernamePassword(credentialsId: 'nexus-creds', usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASSWORD')]) {
+                    sh "mvn deploy -Dnexus.username=${NEXUS_USER} -Dnexus.password=${NEXUS_PASSWORD}"
                 }
             }
         }
@@ -42,8 +45,9 @@ pipeline {
             steps {
                 echo "Copie du WAR dans Tomcat"
                 sh "cp target/*.war ${TOMCAT_WEBAPPS}"
-                
+
                 echo "Redémarrage de Tomcat"
+                // Shutdown ignore errors si déjà arrêté
                 sh "${TOMCAT_HOME}/bin/shutdown.sh || true"
                 sh "${TOMCAT_HOME}/bin/startup.sh"
             }
@@ -51,7 +55,11 @@ pipeline {
     }
 
     post {
-        success { echo "Pipeline terminé avec succès !" }
-        failure { echo "Pipeline échoué !" }
+        success { 
+            echo "Pipeline terminé avec succès !" 
+        }
+        failure { 
+            echo "Pipeline échoué !" 
+        }
     }
 }
